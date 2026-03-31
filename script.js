@@ -104,7 +104,6 @@ function render() {
                     div.classList.add("revealed");
                     if (cell.value === -1) {
                         div.classList.add("bomb");
-                        div.innerHTML = '<img src="Bomb.png" alt="Bomb" style="width:60px; height:30px;">';
                     } else {
                         div.innerText = cell.value;
                     }
