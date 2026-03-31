@@ -13,6 +13,11 @@ let colBomb = [];
 function init() {
     board = [];
     gameOver = false;
+    score = 1;
+
+    let boardElement = document.getElementById("board");
+    if (boardElement) boardElement.innerHTML = "";
+
     for (let i = 0; i < SIZE; i++) {
         board[i] = [];
         for (let j = 0; j < SIZE; j++) {
@@ -62,11 +67,11 @@ function onCellClick(i, j) {
         gameOver = true;
         setTimeout(() => {
             alert(`꼬마돌! 대폭발! ${score}점...`);
-            score = 1;
             init();
         }, 50);
     } else {
         score *= cell.value;
+        render();
         if (checkWin()) {
             setTimeout(() => {
                 alert(`승리! ${score}점!`);
@@ -89,44 +94,88 @@ function onCellRightClick(e, i, j) {
 
 function render() {
     let boardElement = document.getElementById("board");
-    boardElement.innerHTML = "";
+
+    if (boardElement.children.length === 0) {
+        for (let i = 0; i <= SIZE; i++) {
+            for (let j = 0; j <= SIZE; j++) {
+                const div = document.createElement("div");
+                div.id = `cell-${i}-${j}`;
+                boardElement.appendChild(div);
+
+                if (i < SIZE && j < SIZE) {
+                    div.onclick = () => onCellClick(i, j);
+                    div.oncontextmenu = (e) => onCellRightClick(e, i, j);
+
+                    let touchTimer;
+                    let touchMoved = false;
+
+                    div.ontouchstart = (e) => {
+                        if (e.touches.length > 1) return;
+                        touchMoved = false;
+                        touchTimer = setTimeout(() => {
+                            touchTimer = null;
+                            if (!touchMoved) {
+                                onCellRightClick({ preventDefault: () => {} }, i, j);
+                            }
+                        }, 400);
+                    };
+
+                    div.ontouchmove = () => {
+                        touchMoved = true;
+                        if (touchTimer) {
+                            clearTimeout(touchTimer);
+                            touchTimer = null;
+                        }
+                    };
+
+                    div.ontouchend = (e) => {
+                        if (touchTimer) {
+                            clearTimeout(touchTimer);
+                            touchTimer = null;
+                            if (!touchMoved) {
+                                onCellClick(i, j);
+                            }
+                        }
+                        if (e.cancelable) {
+                            e.preventDefault();
+                        }
+                    };
+                }
+            }
+        }
+    }
 
     for (let i = 0; i <= SIZE; i++) {
         for (let j = 0; j <= SIZE; j++) {
-            const div = document.createElement("div");
+            const div = document.getElementById(`cell-${i}-${j}`);
 
             if (i < SIZE && j < SIZE) {
-                // 게임 칸
                 const cell = board[i][j];
-                div.className = "cell";
+                let newClassList = "cell";
+                if (cell.revealed) newClassList += " revealed";
+                if (cell.memo && !cell.revealed) newClassList += " memo";
+                div.className = newClassList;
 
-                if (cell.revealed) {
-                    div.classList.add("revealed");
-                    if (cell.value === -1) {
-                        div.classList.add("bomb");
-                    } else {
-                        div.innerText = cell.value;
-                    }
-                } else if (cell.memo) {
-                    div.classList.add("memo");
+                if (div.innerHTML === "") {
+                    let backContent = cell.value === -1 ? "" : cell.value;
+                    let backClass = cell.value === -1 ? "cell-back bomb" : "cell-back";
+                    
+                    div.innerHTML = `
+                        <div class="cell-inner">
+                            <div class="cell-front"></div>
+                            <div class="${backClass}">${backContent}</div>
+                        </div>
+                    `;
                 }
-
-                div.onclick = () => onCellClick(i, j);
-                div.oncontextmenu = (e) => onCellRightClick(e, i, j);
             } else if (i < SIZE && j === SIZE) {
-                // 가로 힌트
                 div.className = "cell hint";
                 div.innerHTML = `<div class="hint-top">${rowSum[i]}</div><div class="hint-bottom"><img src="Bomb.png" alt="Bomb" style="width:30px; height:16px;"> ${rowBomb[i]}</div>`;
             } else if (i === SIZE && j < SIZE) {
-                // 세로 힌트
                 div.className = "cell hint";
                 div.innerHTML = `<div class="hint-top">${colSum[j]}</div><div class="hint-bottom"><img src="Bomb.png" alt="Bomb" style="width:30px; height:16px;"> ${colBomb[j]}</div>`;
             } else {
-                // 우측 하단 빈 칸
                 div.className = "cell empty";
             }
-
-            boardElement.appendChild(div);
         }
     }
 
