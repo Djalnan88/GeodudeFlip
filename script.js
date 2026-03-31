@@ -108,14 +108,16 @@ function render() {
 
                     let touchTimer;
                     let touchMoved = false;
+                    let isLongPress = false;
 
                     div.ontouchstart = (e) => {
                         if (e.touches.length > 1) return;
                         touchMoved = false;
+                        isLongPress = false;
                         touchTimer = setTimeout(() => {
                             touchTimer = null;
                             if (!touchMoved) {
-                                onCellRightClick({ preventDefault: () => {} }, i, j);
+                                isLongPress = true;
                             }
                         }, 400);
                     };
@@ -135,7 +137,12 @@ function render() {
                             if (!touchMoved) {
                                 onCellClick(i, j);
                             }
+                        } else {
+                            if (isLongPress && !touchMoved) {
+                                onCellRightClick({ preventDefault: () => {} }, i, j);
+                            }
                         }
+                        isLongPress = false;
                         if (e.cancelable) {
                             e.preventDefault();
                         }
