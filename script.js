@@ -13,7 +13,6 @@ let colBomb = [];
 function init() {
     board = [];
     gameOver = false;
-    score = 1;
 
     let boardElement = document.getElementById("board");
     if (boardElement) boardElement.innerHTML = "";
@@ -67,6 +66,7 @@ function onCellClick(i, j) {
         gameOver = true;
         setTimeout(() => {
             alert(`꼬마돌! 대폭발! ${score}점...`);
+            score = 1;
             init();
         }, 50);
     } else {
@@ -139,7 +139,7 @@ function render() {
                             }
                         } else {
                             if (isLongPress && !touchMoved) {
-                                onCellRightClick({ preventDefault: () => {} }, i, j);
+                                onCellRightClick({ preventDefault: () => { } }, i, j);
                             }
                         }
                         isLongPress = false;
@@ -166,7 +166,7 @@ function render() {
                 if (div.innerHTML === "") {
                     let backContent = cell.value === -1 ? "" : cell.value;
                     let backClass = cell.value === -1 ? "cell-back bomb" : "cell-back";
-                    
+
                     div.innerHTML = `
                         <div class="cell-inner">
                             <div class="cell-front"></div>
@@ -203,6 +203,7 @@ function checkWin() {
 }
 
 function onReset() {
+    score = 1;
     init();
 }
 
