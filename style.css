@@ -1,0 +1,81 @@
+body {
+    font-family: 'Comic Sans MS', cursive;
+    text-align: center;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(6, 60px);
+    grid-template-rows: repeat(6, 60px);
+    gap: 10px;
+    font-size: 30px;
+    justify-content: center;
+    margin: 20px;
+}
+
+#gameContainer {
+    display: inline-block;
+}
+
+.hint {
+    font-size: 14px;
+    text-align: center;
+    background: #e0e0e0;
+    cursor: default;
+    flex-direction: column;
+}
+
+.hint-top {
+    flex: 4;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.hint-bottom {
+    flex: 6;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.empty {
+    visibility: hidden;
+}
+
+.cell {
+    width: 60px;
+    height: 60px;
+    background: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+}
+
+.cell.memo::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 10px;
+    height: 10px;
+    background-color: yellow;
+    border-radius: 50%;
+}
+
+.revealed {
+    background: #fff;
+    color: #000;
+}
+
+.bomb {
+    background: brown;
+    color: white;
+}
